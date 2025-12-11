@@ -1,0 +1,33 @@
+{
+  "filters": [
+    {
+      "name": "Lie Down",
+      "checked": true
+    },
+    {
+      "name": "Fall Down",
+      "checked": true
+    },
+    {
+      "name": "Walking",
+      "checked": true
+    },
+    {
+      "name": "Pick Up",
+      "checked": true
+    },
+    {
+      "name": "Run",
+      "checked": false
+    },
+    {
+      "name": "Sit Down",
+      "checked": false
+    },
+    {
+      "name": "Stand Up",
+      "checked": false
+    }
+  ],
+  "notifications": "off"
+}

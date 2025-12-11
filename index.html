@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSI Dashboard</title>
+
+    <style>
+        body {
+            background-color: #ffffff;
+            color: black;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ---------- GRID LAYOUT ---------- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 25% 50% 25%;
+            grid-template-rows: 2fr 1fr 1fr;
+            height: 100vh;
+            gap: 5px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .panel {
+            border: 2px solid black;
+            background-color: #ffffff;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .csi-image {
+            width: 100%;
+            height: 100%;
+            object-fit: fill;   
+        }
+
+        .filters-small {
+            font-size: 0.9rem;
+        }
+
+        .checkbox-row label {
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="grid-container">
+
+    <!-- LEFT PANEL -->
+    <div class="panel" style="grid-column: 1; grid-row: 1 / 4;">
+        <h3>Project Info</h3>
+        <p>
+            • Detects human activity using WiFi CSI data<br>
+            • Uses deep learning (PyTorch model) + real-time CSI processing<br>
+            • Version: <strong>1.0.0</strong><br>
+            • WiFi transmitter status: <strong>Online</strong><br>
+            • WiFi receiver status: <strong>Online</strong><br>
+            • Power status: <strong>Stable</strong><br>
+        </p>
+
+        <h3>AI Stats</h3>
+        <p>
+            • Accuracy: <strong>97%</strong><br>
+            • Model status: Running<br>
+        </p>
+    </div>
+
+    <!-- CSI IMAGE -->
+    <div class="panel" style="grid-column: 2; grid-row: 1 / 3; overflow: hidden;">
+        <img id="csi-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAoAAAAHgCAIAAABv7H0YAAAACXBIWXMAAAsTAAALEwEAmpwYAAACU0lEQVR4nO3RAQEAAAgDIN8/9K3hHBQgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPwGhoAAAXjY7uQAAAAASUVORK5CYII=" 
+             alt="Starting..." class="csi-image">
+    </div>
+
+    <!-- FILTER / IGNORE ACTIVITIES -->
+    <div class="panel" style="grid-column: 2; grid-row: 3;">
+        <h3>Filter / Ignore Activities:</h3>
+
+        <div class="checkbox-row">
+            <label><input type="checkbox" value="Lie Down" checked> Lie Down</label>
+            <label><input type="checkbox" value="Fall Down" checked> Fall Down</label>
+            <label><input type="checkbox" value="Walking" checked> Walking</label>
+            <label><input type="checkbox" value="Pick Up" checked> Pick Up</label>
+            <label><input type="checkbox" value="Run" checked> Run</label>
+            <label><input type="checkbox" value="Sit Down" checked> Sit Down</label>
+            <label><input type="checkbox" value="Stand Up" checked> Stand Up</label>
+        </div>
+
+        <h3>Notifications:</h3>
+        <label><input type="radio" name="notif" value="on" checked> On</label>
+        <label><input type="radio" name="notif" value="off"> Off</label>
+
+        <button id="save-options" style="padding:6px; margin-left:10px; cursor:pointer;">
+            Save Options
+        </button>
+    </div>
+
+    <!-- HISTORY LOG -->
+    <div class="panel" style="grid-column: 3; grid-row: 1;">
+        <h3>History Log</h3>
+        <div id="history-entries"></div>
+    </div>
+
+    <!-- SEARCH RESULTS -->
+    <div class="panel" style="grid-column: 3; grid-row: 2;">
+        <h3>Search Results</h3>
+        <div id="search-results"><em>search results appear here.</em></div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="panel filters-small" style="grid-column: 3; grid-row: 3;">
+        <h3>Data / Time / Activity Filters:</h3>
+
+        <label for="time-filter">Time Filter:</label>
+        <select id="time-filter" style="width: 100%; padding: 5px; margin-bottom: 10px;">
+            <option value="Last hour">Last hour</option>
+            <option value="Today">Today</option>
+            <option value="Yesterday">Yesterday</option>
+            <option value="This week">This week</option>
+        </select>
+
+        <h3>Search Activity:</h3>
+        <input type="text" id="search-text" placeholder="Search..." 
+               style="width: 100%; padding: 5px; margin-bottom: 8px;">
+
+        <button id="search-btn" style="width:100%; padding:6px; cursor:pointer;">
+            Search
+        </button>
+    </div>
+
+</div>
+
+
+<!-- ======================== JAVASCRIPT ======================== -->
+<script>
+console.log("JS RUNNING");
+
+const HOST = window.location.hostname;
+
+const WS_URL  = `ws://${HOST}:9000/`;
+const LOG_URL = `http://${HOST}:8001/logs`;
+const SAVE_URL = `http://${HOST}:8080/save-options`;
+const LOAD_URL = `http://${HOST}:8080/load-options`;
+
+console.log("WS:", WS_URL);
+console.log("LOG:", LOG_URL);
+
+/* =====================================================
+   HUMAN READABLE LABELS (still useful for UI only)
+===================================================== */
+function readableLabel(label) {
+    const clean = label.replace("[TEST] ", "");
+    const map = {
+        "Lie Down": "Person is lying down",
+        "Fall Down": "⚠️ PERSON FELL!",
+        "Walking": "Person is walking",
+        "Pick Up": "Person is picking up something",
+        "Run": "Person is running",
+        "Sit Down": "Person is sitting",
+        "Stand Up": "Person is standing"
+        
+    };
+    return map[clean] || ("Person activity: " + clean);
+}
+
+/* =====================================================
+   (DISABLED) HTML NOTIFICATION SENDER
+   *** Now handled by Python server ***
+===================================================== */
+
+/*
+async function sendNotification(text) {
+    try {
+        const url = "https://csi-api.cipher0001.workers.dev/send?text=" +
+            encodeURIComponent(text);
+        await fetch(url);
+    } catch (err) {
+        console.warn("Notification send failed:", err);
+    }
+}
+*/
+
+/* =====================================================
+   SAVE OPTIONS TO SERVER
+===================================================== */
+async function saveOptionsToServer() {
+    const data = {
+        filters: Array.from(
+            document.querySelectorAll('input[type="checkbox"]')
+        ).map(cb => ({ name: cb.value, checked: cb.checked })),
+
+        notifications:
+            document.querySelector("input[name='notif']:checked").value
+    };
+
+    try {
+        await fetch(SAVE_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+        alert("Options saved!");
+    } catch (err) {
+        alert("Error saving options.");
+        console.error(err);
+    }
+}
+
+/* =====================================================
+   LOAD OPTIONS FROM SERVER
+===================================================== */
+async function loadOptionsFromServer() {
+    try {
+        const res = await fetch(LOAD_URL);
+        const json = await res.json();
+        if (json.status !== "ok") return;
+
+        const data = json.data;
+
+        // Restore checkboxes
+        for (const entry of data.filters) {
+            const cb = document.querySelector(
+                `input[type="checkbox"][value="${entry.name}"]`
+            );
+            if (cb) cb.checked = entry.checked;
+        }
+
+        // Restore notifications
+        const notif = data.notifications || "on";
+        document.querySelector(
+            `input[name="notif"][value="${notif}"]`
+        ).checked = true;
+
+    } catch (err) {
+        console.warn("Could not load saved options:", err);
+    }
+}
+
+/* =====================================================
+   HISTORY (NO NOTIFICATIONS HERE ANYMORE)
+===================================================== */
+function addHistoryEntry(label) {
+    const allowed = Array.from(
+        document.querySelectorAll('input[type="checkbox"]:checked')
+    ).map(cb => cb.value);
+
+    const clean = label.replace("[TEST] ", "");
+
+    /* --------- NOTIFICATIONS REMOVED ---------
+    const notifOn = document.querySelector("input[name='notif']:checked").value === "on";
+    if (notifOn && allowed.includes(clean)) {
+        sendNotification(readableLabel(label));
+    }
+    ------------------------------------------- */
+
+    if (!allowed.includes(clean)) return;
+
+    const el = document.getElementById("history-entries");
+    const stamp = new Date().toLocaleString();
+    el.innerHTML += `${stamp}: ${label}<br>`;
+    el.scrollTop = el.scrollHeight;
+}
+
+/* =====================================================
+   TIME FILTER
+===================================================== */
+function recordInsideTimeRange(tstamp, filter) {
+    const now = new Date();
+    const t = new Date(tstamp);
+
+    if (filter === "Last hour") return now - t <= 3600000;
+    if (filter === "Today") return t.toDateString() === now.toDateString();
+    if (filter === "Yesterday") {
+        const y = new Date(); y.setDate(now.getDate() - 1);
+        return t.toDateString() === y.toDateString();
+    }
+    if (filter === "This week") {
+        const w = new Date(); w.setDate(now.getDate() - 7);
+        return t >= w;
+    }
+    return true;
+}
+
+/* =====================================================
+   SEARCH LOG FILE
+===================================================== */
+document.getElementById("search-btn").addEventListener("click", async () => {
+    const panel = document.getElementById("search-results");
+    const keyword = document.getElementById("search-text").value.toLowerCase();
+    const time = document.getElementById("time-filter").value;
+
+    panel.innerHTML = "<em>Searching...</em>";
+
+    try {
+        const res = await fetch(LOG_URL);
+        const logText = await res.text();
+        const lines = logText.split("\n").filter(x => x.trim().length > 0);
+
+        const results = [];
+        for (const line of lines) {
+            const parts = line.split(": ");
+            const timestamp = parts[0];
+            const label = parts.slice(1).join(": ");
+
+            if (!recordInsideTimeRange(timestamp, time)) continue;
+            if (keyword && !label.toLowerCase().includes(keyword)) continue;
+
+            results.push(`${timestamp}: ${label}`);
+        }
+
+        panel.innerHTML = results.length ? results.join("<br>") :
+            "<em>No matching results.</em>";
+
+    } catch (err) {
+        panel.innerHTML = "<em>Error loading log file.</em>";
+        console.error("SEARCH ERROR:", err);
+    }
+});
+
+/* =====================================================
+   WEBSOCKET
+===================================================== */
+function connectWS() {
+    let socket = new WebSocket(WS_URL);
+
+    socket.onopen  = () => console.log("WS CONNECTED ✓");
+    socket.onerror = e  => console.log("WS ERROR ❌", e);
+    socket.onclose = () => {
+        console.log("WS DISCONNECTED — retrying…");
+        setTimeout(connectWS, 1500);
+    };
+
+    socket.onmessage = (event) => {
+        const data  = JSON.parse(event.data);
+        const label = data.label || "";
+        const img   = data.image || "";
+
+        addHistoryEntry(label);
+
+        const allowed = Array.from(
+            document.querySelectorAll('input[type="checkbox"]:checked')
+        ).map(x => x.value);
+
+        const clean = label.replace("[TEST] ", "");
+
+        if (allowed.includes(clean) && img.length > 10) {
+            document.getElementById("csi-image").src =
+                "data:image/png;base64," + img;
+        }
+    };
+}
+
+connectWS();
+loadOptionsFromServer();
+
+document.getElementById("save-options").onclick = saveOptionsToServer;
+
+</script>
+
+
+
+
+</body>
+</html>
