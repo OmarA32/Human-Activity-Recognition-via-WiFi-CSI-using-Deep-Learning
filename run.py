@@ -92,6 +92,63 @@ async def send_label_with_image(label, img_b64):
 
 
 # ============================================================
+#   WEIGHTS UTILS
+# ============================================================
+WEIGHTS_ROOT = "weights"
+
+
+def get_latest_weights(model_name):
+    """
+    Returns path to latest weights file or None
+    """
+    if not os.path.exists(WEIGHTS_ROOT):
+        return None
+
+    model_dir = os.path.join(WEIGHTS_ROOT, model_name)
+    if not os.path.exists(model_dir):
+        return None
+
+    runs = sorted(os.listdir(model_dir))
+    if not runs:
+        return None
+
+    latest_run = runs[-1]
+    weights_path = os.path.join(model_dir, latest_run, "model.pt")
+
+    return weights_path if os.path.exists(weights_path) else None
+
+
+def save_weights(model, model_name):
+    """
+    Saves model weights to weights/<model_name>/<timestamp>/model.pt
+    """
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    save_dir = os.path.join(WEIGHTS_ROOT, model_name, timestamp)
+    os.makedirs(save_dir, exist_ok=True)
+
+    path = os.path.join(save_dir, "model.pt")
+    torch.save(model.state_dict(), path)
+
+    print(f"💾 Weights saved to {path}")
+    return path
+
+
+def load_weights_if_available(model, model_name, device):
+    """
+    Loads latest weights if they exist
+    """
+    weights_path = get_latest_weights(model_name)
+
+    if weights_path is None:
+        print("🆕 No saved weights found — training from scratch.")
+        return False
+
+    model.load_state_dict(torch.load(weights_path, map_location=device))
+    print(f"✅ Loaded weights from {weights_path}")
+    return True
+
+
+# ============================================================
 #   TRAIN (ASYNC)
 # ============================================================
 async def train_async(model, loader, num_epochs, lr, criterion, device):
@@ -157,25 +214,33 @@ async def test_async(model, loader, criterion, device):
             outputs = model(inputs)
             loss = criterion(outputs, labels)
 
+        # batch stats (unchanged logic)
         total_loss += loss.item() * inputs.size(0)
-        pred = outputs.argmax(1)
-        total_acc += (pred == labels).float().mean().item()
+        preds = outputs.argmax(1)
+        total_acc += (preds == labels).float().mean().item()
 
-        pred_idx = pred[0].item()
-        label_str = "[TEST] " + class_names[pred_idx]
+        # 🔽 shuffle only the displayed samples
+        indices = torch.randperm(inputs.size(0))
 
-        log_activity(label_str)
+        for i in indices:
+            i = i.item()
 
-        await send_label(label_str)    # <-- send backend notification
+            pred_idx = preds[i].item()
+            label_str = "" + class_names[pred_idx]
 
-        # In test, send CSI image
-        img_b64 = csi_to_base64(inputs[0])
-        await send_label_with_image(label_str, img_b64)
+            log_activity(label_str)
 
-        await asyncio.sleep(0)
+            await send_label(label_str)
+
+            img_b64 = csi_to_base64(inputs[i])
+            await send_label_with_image(label_str, img_b64)
+
+            await asyncio.sleep(1)
+
 
     print(f"[TEST] Loss={total_loss/len(loader.dataset):.4f}  "
           f"Acc={total_acc/len(loader):.4f}")
+
 
 
 # ============================================================
@@ -203,8 +268,19 @@ async def async_main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
-    await train_async(model, train_loader, train_epoch, 1e-3, criterion, device)
-    await test_async(model, test_loader, criterion, device)
+    weights_loaded = load_weights_if_available(
+        model,
+        args.model,
+        device
+    )
+
+    if weights_loaded:
+        print("🔍 Testing loaded weights before training...")
+        await test_async(model, test_loader, criterion, device)
+    else:
+        await train_async(model, train_loader, train_epoch, 1e-3, criterion, device)
+        save_weights(model, args.model)
+        await test_async(model, test_loader, criterion, device)
 
     print("🎉 Training + Testing Finished.")
 

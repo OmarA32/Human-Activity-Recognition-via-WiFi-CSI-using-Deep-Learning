@@ -58,7 +58,7 @@
         <h3>Project Info</h3>
         <p>
             • Detects human activity using WiFi CSI data<br>
-            • Uses deep learning (PyTorch model) + real-time CSI processing<br>
+            • Uses deep learning<br>
             • Version: <strong>1.0.0</strong><br>
             • WiFi transmitter status: <strong>Online</strong><br>
             • WiFi receiver status: <strong>Online</strong><br>
@@ -341,7 +341,10 @@ function connectWS() {
         const label = data.label || "";
         const img   = data.image || "";
 
-        addHistoryEntry(label);
+        if (!img || img.length === 0) {
+            addHistoryEntry(label);
+        }
+
 
         const allowed = Array.from(
             document.querySelectorAll('input[type="checkbox"]:checked')
