@@ -238,10 +238,6 @@ async def test_async(model, loader, criterion, device):
             await asyncio.sleep(1)
 
 
-    print(f"[TEST] Loss={total_loss/len(loader.dataset):.4f}  "
-          f"Acc={total_acc/len(loader):.4f}")
-
-
 
 # ============================================================
 #   MAIN
