@@ -18,6 +18,10 @@ def load_data_n_model(dataset_name, model_name, root):
             print("using model: RNN")
             model = UT_HAR_RNN()
             train_epoch = 3000
+        elif model_name == 'LSTM':
+            print("using model: LSTM")
+            model = UT_HAR_LSTM()
+            train_epoch = 200
         elif model_name == 'ViT':
             print("using model: ViT")
             model = UT_HAR_ViT()

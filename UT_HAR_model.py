@@ -5,6 +5,9 @@ import torch.nn.functional as F
 from einops import rearrange, reduce, repeat
 from einops.layers.torch import Rearrange, Reduce
 
+# --------------------------
+# MLP
+# --------------------------
 
 class UT_HAR_MLP(nn.Module):
     def __init__(self):
@@ -22,6 +25,9 @@ class UT_HAR_MLP(nn.Module):
         x = self.fc(x)
         return x
 
+# --------------------------
+# RNN
+# --------------------------
 
 class UT_HAR_RNN(nn.Module):
     def __init__(self, hidden_dim=64):
@@ -34,7 +40,22 @@ class UT_HAR_RNN(nn.Module):
         _, ht = self.rnn(x)
         return self.fc(ht[-1])
 
+# --------------------------
+# LSTM
+# --------------------------
 
+class UT_HAR_LSTM(nn.Module):
+    def __init__(self,hidden_dim=64):
+        super(UT_HAR_LSTM,self).__init__()
+        self.lstm = nn.LSTM(90,hidden_dim,num_layers=1)
+        self.fc = nn.Linear(hidden_dim,7)
+    def forward(self,x):
+        x = x.view(-1,250,90)
+        x = x.permute(1,0,2)
+        _, (ht,ct) = self.lstm(x)
+        outputs = self.fc(ht[-1])
+        return outputs
+    
 # --------------------------
 # Vision Transformer (ViT)
 # --------------------------
