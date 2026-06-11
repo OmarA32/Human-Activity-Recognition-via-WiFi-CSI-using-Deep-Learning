@@ -1,1 +1,1 @@
-.
+Full-stack system that uses Wi-Fi Channel State Information (CSI) to classify and monitor human activities without cameras or wearables. The system leverages a Vision Transformer (ViT) for activity recognition and includes a user interface with real-time monitoring and notification features.
