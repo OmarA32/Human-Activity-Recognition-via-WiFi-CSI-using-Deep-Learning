@@ -14,7 +14,6 @@ While this project utilizes the core data processing and modeling pipelines from
 ## Acknowledgements & Attribution
 The foundational Wi-Fi sensing benchmark and data extraction tools in this repository are modified from the original [SenseFi repository](https://github.com/xyanchen/wifi-csi-sensing-benchmark). 
 
-If you use the base benchmark tools, please cite their original work:
 > Jianfei Yang et al., *SenseFi: A Library and Benchmark on Deep-Learning-Empowered WiFi Human Sensing*, PRCV 2023.
 
 ## License
