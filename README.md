@@ -17,4 +17,4 @@ The foundational Wi-Fi sensing benchmark and data extraction tools in this repos
 > Jianfei Yang et al., *SenseFi: A Library and Benchmark on Deep-Learning-Empowered WiFi Human Sensing*, PRCV 2023.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT [LICENSE](LICENSE) 
