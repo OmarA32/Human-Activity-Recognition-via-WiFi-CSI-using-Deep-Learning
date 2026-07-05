@@ -1,7 +1,7 @@
 ## Overview
 This repository contains the codebase for a full-stack system that uses Wi-Fi Channel State Information (CSI) to classify and monitor human activities completely without cameras or wearables. The system leverages a Vision Transformer (ViT) for accurate activity recognition and features a complete user interface for real-time monitoring and notifications. 
 
-Additionally, this project includes comprehensive scripts for synthetic data generation used to train, test, and expand the UT-HAR dataset.
+Additionally, this project includes scripts for synthetic data generation, which can be used to train, test, and expand the UT-HAR dataset. These scripts are located in the Synth data folder. To maintain compatibility with the original UT-HAR dataset, all generated arrays should be exported and saved as .csv files.
 
 This project is built upon the **SenseFi (WiFi-CSI-Sensing-Benchmark)** framework, expanding its core capabilities with advanced generative models and a complete GUI for practical HAR experiments.
 
